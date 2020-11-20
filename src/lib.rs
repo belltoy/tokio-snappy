@@ -1,4 +1,4 @@
-//!
+//!  Wrap rust-snappy for `tokio::io::AsyncRead` and `tokio::io::AsyncWrite`.
 //!
 use std::pin::Pin;
 use std::io::{Read, Write, Result};
@@ -30,8 +30,9 @@ const MAX_BLOCK_SIZE: usize = 1 << 16;
 // max_compress_len(MAX_BLOCK_SIZE)
 const MAX_COMPRESSED_SIZE: usize = 76490;
 
-/// Snappy Async IO
+/// Async implementation for the snappy framed encoder/decoder.
 #[pin_project]
+#[derive(Debug)]
 pub struct SnappyIO<T> {
     #[pin] inner: T,
     read_buf: BytesMut,
@@ -41,7 +42,7 @@ pub struct SnappyIO<T> {
 
 impl<T> SnappyIO<T> {
 
-    /// new SnappyIO
+    /// Create a new SnappyIO, wrapped the given io object.
     pub fn new(io: T) -> Self {
         let encoder_writer = BytesMut::with_capacity(MAX_BLOCK_SIZE);
         let decoder_reader = BytesMut::with_capacity(MAX_COMPRESSED_SIZE);
@@ -53,7 +54,7 @@ impl<T> SnappyIO<T> {
         }
     }
 
-    /// into inner
+    /// Consume this `SnappyIO`, returning the underlying value.
     pub fn into_inner(self) -> T {
         self.inner
     }
