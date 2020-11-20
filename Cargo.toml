@@ -1,19 +1,27 @@
 [package]
 name = "tokio-snappy"
 version = "0.1.0"
-authors = ["belltoy <belltoy@gmail.com>"]
+authors = ["Zhongqiu Zhao <belltoy@gmail.com>"]
 edition = "2018"
+description = """
+Wrap [rust-snappy](https://crates.io/crates/snap) for `tokio::io::AsyncRead` and `tokio::io::AsyncWrite`.
+"""
+repository = "https://github.com/belltoy/tokio-snappy"
+homepage = "https://github.com/belltoy/toikio-snappy"
+documentation = "https://docs.rs/tokio-snappy"
+license = "MIT"
+readme = "README.md"
+
+keywords = ["snappy", "compress", "decompress", "tokio", "async"]
+categories = ["asynchronous", "compression"]
+
+publish = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bytes = "0.6.0"
-futures = "0.3.8"
-pin-project = "1.0.1"
+bytes = "0.6"
+futures = "0.3"
+pin-project = "1"
 snap = "1"
-tokio = { version = "0.3", optional = true }
-tokio-util = { version = "0.5", optional = true }
-
-[features]
-default = ["tokio"]
-codec = ["tokio-util/codec"]
+tokio = "0.3"
