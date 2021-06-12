@@ -81,7 +81,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
                 let n = {
                     let dst = decoder_buf.bytes_mut();
                     let dst = unsafe { &mut *(dst as *mut _ as *mut [MaybeUninit<u8>]) };
-                    let mut buf = ReadBuf::uninit(&mut dst[..4]);
+                    let mut buf = ReadBuf::uninit(&mut dst[..4 - buf_len]);
                     let ptr = buf.filled().as_ptr();
                     let inner = this.inner.as_mut();
                     ready!(inner.poll_read(cx, &mut buf)?);
@@ -112,7 +112,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
                 let n = {
                     let dst = decoder_buf.bytes_mut();
                     let dst = unsafe { &mut *(dst as *mut _ as *mut [MaybeUninit<u8>]) };
-                    let mut buf = ReadBuf::uninit(&mut dst[..chunk_len]);
+                    let mut buf = ReadBuf::uninit(&mut dst[..chunk_len + 4 - buf_len]);
                     let ptr = buf.filled().as_ptr();
                     ready!(this.inner.as_mut().poll_read(cx, &mut buf)?);
 
