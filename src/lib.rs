@@ -169,7 +169,15 @@ impl<T: AsyncWrite + Unpin> AsyncWrite for SnappyIO<T> {
     }
 
     fn poll_flush(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<()>> {
-        self.project().inner.poll_flush(cx)
+        let mut this = self.project();
+
+        this.encoder.flush()?;
+        let output_buf = this.encoder.get_mut().get_mut();
+        while output_buf.has_remaining() {
+            let n = ready!(this.inner.as_mut().poll_write(cx, output_buf.bytes())?);
+            output_buf.advance(n);
+        }
+        this.inner.poll_flush(cx)
     }
 
     fn poll_shutdown(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<()>> {
