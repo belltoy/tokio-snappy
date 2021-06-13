@@ -79,7 +79,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
                 decoder_buf.reserve(4 - buf_len);
 
                 let n = {
-                    let dst = decoder_buf.bytes_mut();
+                    let dst = decoder_buf.chunk_mut();
                     let dst = unsafe { &mut *(dst as *mut _ as *mut [MaybeUninit<u8>]) };
                     let mut buf = ReadBuf::uninit(&mut dst[..4 - buf_len]);
                     let ptr = buf.filled().as_ptr();
@@ -110,7 +110,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
             if buf_len < chunk_len + 4 {
                 decoder_buf.reserve(chunk_len + 4 - buf_len);
                 let n = {
-                    let dst = decoder_buf.bytes_mut();
+                    let dst = decoder_buf.chunk_mut();
                     let dst = unsafe { &mut *(dst as *mut _ as *mut [MaybeUninit<u8>]) };
                     let mut buf = ReadBuf::uninit(&mut dst[..chunk_len + 4 - buf_len]);
                     let ptr = buf.filled().as_ptr();
@@ -131,7 +131,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
             }
 
             if decoder_buf.len() == chunk_len + 4 {
-                let dst = this.read_buf.bytes_mut();
+                let dst = this.read_buf.chunk_mut();
                 let mut dst = unsafe { &mut *(dst as *mut _ as *mut [u8]) };
                 let _decoded = this.decoder.read(&mut dst)?;
                 unsafe {
@@ -154,7 +154,7 @@ impl<T: AsyncWrite + Unpin> AsyncWrite for SnappyIO<T> {
         loop {
             let output_buf = this.encoder.get_mut().get_mut();
             if output_buf.has_remaining() {
-                let n = ready!(this.inner.as_mut().poll_write(cx, output_buf.bytes())?);
+                let n = ready!(this.inner.as_mut().poll_write(cx, output_buf.chunk())?);
                 output_buf.advance(n);
                 return Poll::Ready(Ok(len));
             }
@@ -174,7 +174,7 @@ impl<T: AsyncWrite + Unpin> AsyncWrite for SnappyIO<T> {
         this.encoder.flush()?;
         let output_buf = this.encoder.get_mut().get_mut();
         while output_buf.has_remaining() {
-            let n = ready!(this.inner.as_mut().poll_write(cx, output_buf.bytes())?);
+            let n = ready!(this.inner.as_mut().poll_write(cx, output_buf.chunk())?);
             output_buf.advance(n);
         }
         this.inner.poll_flush(cx)
