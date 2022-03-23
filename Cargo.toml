@@ -1,10 +1,10 @@
 [package]
 name = "tokio-snappy"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Zhongqiu Zhao <belltoy@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = """
-Wrap [rust-snappy](https://crates.io/crates/snap) for `tokio::io::AsyncRead` and `tokio::io::AsyncWrite`.
+Wrap rust-snappy as a async stream in tokio.
 """
 repository = "https://github.com/belltoy/tokio-snappy"
 homepage = "https://github.com/belltoy/toikio-snappy"
@@ -24,4 +24,4 @@ bytes = "1.0"
 futures = "0.3"
 pin-project = "1"
 snap = "1"
-tokio = "1.6"
+tokio = "1"
