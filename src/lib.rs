@@ -3,9 +3,7 @@
 use std::pin::Pin;
 use std::io::{Read, Write, Result};
 use std::task::{Context, Poll};
-use std::mem::{
-    MaybeUninit,
-};
+use std::mem::MaybeUninit;
 
 use pin_project::pin_project;
 use tokio::io::{
