@@ -58,7 +58,7 @@ impl<T> SnappyIO<T> {
     }
 }
 
-impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
+impl<T: AsyncRead> AsyncRead for SnappyIO<T> {
     fn poll_read(self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut ReadBuf<'_>) -> Poll<Result<()>> {
         let mut this = self.project();
 
@@ -140,7 +140,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for SnappyIO<T> {
     }
 }
 
-impl<T: AsyncWrite + Unpin> AsyncWrite for SnappyIO<T> {
+impl<T: AsyncWrite> AsyncWrite for SnappyIO<T> {
     fn poll_write(self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &[u8]) -> Poll<Result<usize>> {
         if buf.is_empty() {
             return Poll::Ready(Ok(0));
